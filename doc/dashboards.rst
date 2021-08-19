@@ -400,12 +400,28 @@ URL Menu Item
 It links to a relative or absolute URL::
 
     use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
+    
+    private $adminUrlGenerator;
+
+    public function __construct(AdminUrlGenerator $adminUrlGenerator)
+    {
+        $this->adminUrlGenerator = $adminUrlGenerator;
+    }
 
     public function configureMenuItems(): iterable
     {
+        $publishedPostsUrl = $this->adminUrlGenerator
+            ->setController(BlogPostCrudController::class)
+            ->setAction('index')
+            ->set('filters', ['is_published' => true])
+            ->generateUrl();
+            
         return [
             MenuItem::linkToUrl('Visit public website', null, '/'),
-            MenuItem::linkToUrl('Search in Google', 'fab fa-google', 'https://google.com'),
+            MenuItem::linkToUrl('Search in Google', 'fab fa-google', 'https://google.com'),  
+ 
+            // Custom url to Crud controller action, with additional parameters  
+            MenuItem::linkToUrl('Published posts', 'fa fa-check', $publishedPostsUrl);
             // ...
         ];
     }
